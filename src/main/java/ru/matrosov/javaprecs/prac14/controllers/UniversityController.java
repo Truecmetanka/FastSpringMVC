@@ -3,22 +3,22 @@ package ru.matrosov.javaprecs.prac14.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.matrosov.javaprecs.prac14.dao.UniversityDAO;
 import ru.matrosov.javaprecs.prac14.models.University;
 
 @Controller
 @RequestMapping("/universities")
 public class UniversityController {
 
-    private final University university;
+    private final UniversityDAO dao;
 
-    public UniversityController(University university) {
-        this.university = university;
+    public UniversityController(UniversityDAO dao) {
+        this.dao = dao;
     }
 
     @GetMapping()
     public String getUniversities(Model model) {
-        university.fillArray();
-        model.addAttribute("universities", university.getUniversities());
+        model.addAttribute("universities", dao.findAll());
         return "index1";
     }
 
@@ -29,14 +29,13 @@ public class UniversityController {
 
     @PostMapping()
     public String create(@ModelAttribute("student") University university) {
-        university.addUniversityInList(university);
-        System.out.println(university.getUniversities());
+        dao.save(university);
         return "redirect:/universities";
     }
 
     @GetMapping("/delete/{name}")
     public String delete(@PathVariable("name") String name) {
-        university.deleteUniversity(name);
+        dao.delete(name);
         return "redirect:/universities";
     }
 }
